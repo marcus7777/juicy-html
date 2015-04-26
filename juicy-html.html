@@ -1,3 +1,16 @@
+<!-- CONVERSION NOTES TODO:
+ Review code and look for: 
+ - textContent binding from <div>First: {{first}}</div> TO <span>{{first}}</span><br>
+ - fix indentation as need 
+ - polymer-element default attributes such as tabindex="0" move to hostAttributes: {  tabindex: 0}
+ - custom elements correct JSON quotes required, change from <my-element foo="{ 'title': 'Persuasion', 'author': 'Austen' }"> to </my-element> to <my-element foo="{ "title": "Persuasion", "author": "Austen" }"></my-element>
+ - custom elements attribute use dash-case not camelCase, change from  <my-element fooBar= to <my-element foo-bar
+ - Polymer( fix mixins use mixins: [mixinName] after is: ,
+ - Cleanup Comments to reflect changes ,
+ - see https://www.polymer-project.org/0.8/docs/migration.html
+ -   -->
+ 
+
 <!--
 juicy-html.html v0.0.20141119
 (c) 2013 Joachim Wester
@@ -8,7 +21,6 @@ https://github.com/Juicy/juicy-html
 <script>
   (function () {
     var JuicyHTMLPrototype = Object.create( (HTMLTemplateElement || HTMLElement ).prototype);
-
     JuicyHTMLPrototype.loadTemplate_ = function() {
       var val = this.getAttribute('content');
       if (val && (val.indexOf('/') === 0 || val.indexOf('./') === 0)) {
@@ -26,7 +38,6 @@ https://github.com/Juicy/juicy-html
         this.reattachTemplate_(val);
       }
     };
-
     JuicyHTMLPrototype.reattachTemplate_ = function(html) {
       if( this.subTemplate ){
         // IDEA: or maybe just this.subTempalte.clear()? - to leave lightDOM template untouched (tomalec)
@@ -35,17 +46,17 @@ https://github.com/Juicy/juicy-html
         this.subTemplate = document.createElement("template");
       }
       this.subTemplate.setAttribute("bind", this.getAttribute("bind") || "");
-      this.subTemplate.setAttribute("repeat", this.getAttribute("repeat") );
+      this.subTemplate.setAttribute("is="x-repeat" items="{{data}}"  ", this.getAttribute("repeat") );
+      <!-- TODO fix repeat, replace data, remove extra ="{{stuff}}"   CONVERTED WIP --> 
       this.subTemplate.setAttribute("if", this.getAttribute("if") );
       this.subTemplate.innerHTML = html;
       this.parentNode.insertBefore(this.subTemplate, this.nextSibling);
       if(window.PolymerExpressions) {
-        this.subTemplate.bindingDelegate = new PolymerExpressions; //use PolymerExpressions if available. This allows <template if="{{val == 1}}">, etc
+        this.subTemplate.bindingDelegate = new PolymerExpressions; //use PolymerExpressions if available. This allows <template is="x-if" if="{{val == 1}}">, etc
+      <!-- TODO fix if=,   CONVERTED WIP --> 
       }
       this.subTemplate.model = this.model;
-
     };
-
     /**
      * Empty xhml content.
      * @TODO clear also siblings for `juicy-html[currentnode]`
@@ -56,7 +67,6 @@ https://github.com/Juicy/juicy-html
     JuicyHTMLPrototype.clear = function(){
       return this.subTemplate.clear() && HTMLTemplateElement.prototype.clear.call(this);
     };
-
     JuicyHTMLPrototype.isAttached = false;
     JuicyHTMLPrototype.attachedCallback = function () {
       this.isAttached = true;
@@ -70,7 +80,6 @@ https://github.com/Juicy/juicy-html
         this.loadTemplate_();
       }
     };
-
     document.registerElement('juicy-html', {
       prototype: JuicyHTMLPrototype,
       extends: "template"
